@@ -33,4 +33,4 @@ def divisione(x, y):
     
 #radice di un numero
 def sqrt_num(x):
-    return x * 0.5
+    return x ** 0.5 
