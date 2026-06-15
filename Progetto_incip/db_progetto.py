@@ -1,0 +1,36 @@
+import sqlite3
+
+
+def dbinit():
+    #Crea il database se non esiste e popola la tabella se vuota.
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS prodotti (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            prezzo REAL
+        )
+    """)
+    conn.commit()
+
+    # Controllo se è vuoto
+    cursor.execute("SELECT COUNT(*) FROM prodotti")
+    count = cursor.fetchone()[0]
+
+    # Se vuoto lo popolo con dei dati di esempio
+    if count == 0:
+        lista_prodotti = [
+            ("Mouse Wireless", 25.50),
+            ("Tastiera Meccanica", 89.90),
+            ("Monitor 24 Pollici", 149.00),
+            ("Cuffie Gaming", 45.00),
+            ("Tappetino XL", 15.00),
+        ]
+        cursor.executemany("INSERT INTO prodotti (nome, prezzo) VALUES (?, ?)", lista_prodotti)
+        conn.commit()
+
+    # Chiudiamo la connessione iniziale globale
+    conn.close()
+    print("Database inizializzato e popolato se vuoto.")
