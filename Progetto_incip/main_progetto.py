@@ -3,11 +3,25 @@ from db_progetto import dbinit
 from prodotti_progetto import router as prodotti_router
 
 
+from fastapi.middleware.cors import CORSMiddleware
+
 #inizializzazione del db
 dbinit()
 
 # Dichiaro FastAPI
 app = FastAPI()
+
+
+# Configuro il CORS per accettare tutto
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],          # Permette l'accesso da qualsiasi sito (Origin)
+    allow_credentials=True,
+    allow_methods=["*"],          # Permette tutti i metodi (GET, POST, PUT, DELETE, ecc.)
+    allow_headers=["*"],          # Permette tutte le intestazioni (Headers)
+)
+
+
 
 app.include_router(prodotti_router)
 
@@ -15,3 +29,5 @@ app.include_router(prodotti_router)
 @app.get("/")
 def root():
     return {"messaggio/info": "Benvenuto!/Server principale attivo"}
+
+

@@ -20,6 +20,7 @@ def lista_prodotti():
     conn.close()
     return risultato
 
+
 @router.get("/prodotti/{id_prodotto}")
 def lista_prodotto_singolo(id_prodotto: int):
     conn = sqlite3.connect("database.db")
@@ -32,6 +33,8 @@ def lista_prodotto_singolo(id_prodotto: int):
     if risultato is None:
         raise HTTPException(status_code=404, detail="Prodotto non trovato")
     return risultato
+
+
 
 # Espongo la chiamata per inserire un nuovo prodotto
 @router.post("/prodotti", status_code=201)

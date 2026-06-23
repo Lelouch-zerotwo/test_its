@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Il mio negozio web</title>
+</head>
+<body style="font-family: sans-serif; padding: 40px;">
+    <h1>Prodotti del Database</h1>
+    <button onclick="caricaDati()">Aggiorna Lista</button>
+    <ul id="lista" style="margin-top:20px;"></ul>
+    <!-- seconda parte -->
+    <div style="margin-bottom: 30px; background: #f1f5f9; padding: 20px; border-radius: 8px;">
+        <h3>Aggiungi Nuovo Prodotto</h3>
+        <input type="text" id="nuovoNome" placeholder="Nome Prodotto">
+        <input type="number" id="nuovoPrezzo" placeholder="Prezzo (€)">
+        <button onclick="inviaDati()">Salva nel Database</button>
+    </div>
+
+
+    <div style="margin-top: 30px; padding: 20px; background: #f1f5f9;">
+        <h3>Login</h3>
+
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+
+        <button onclick="login()">Accedi</button>
+
+        <p id="risultatoLogin"></p>
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #e2e8f0;">
+        <h3>Registrazione</h3>
+
+        <input type="text" id="regUsername" placeholder="Username">
+        <input type="password" id="regPassword" placeholder="Password">
+
+        <button onclick="register()">Registrati</button>
+
+        <p id="risultatoRegister"></p>
+    </div>
+    <script>
+        async function caricaDati() {
+            // 1. Chiediamo i dati alla nostra API funzionante sulla porta 8000
+            // 2. Trasformiamo il testo JSON ricevuto in un array JavaScript
+            // 3. Cicliamo i dati e creiamo i nodi HTML al volo
+            let res = await fetch('https://special-space-halibut-wvrrq9rgqw573q55-8000.app.github.dev/prodotti');
+            console.log(res);
+            let dati = await res.json();
+            debugger;
+            const lista = document.getElementById('lista');
+            lista.innerHTML = " "; // svuota la lista prima di aggiungere nuovi elementi
+             
+            /*
+            for(let i = 0; i < data.length; i++){
+                // 1. Crea un nuovo elemento di tipo "li"
+                let newElement = document.createElement('li');
+    
+                // 2. Inserisci il testo del prodotto dentro il tag (es. il nome del prodotto)
+                newElement.textContent = data[i].nome; 
+        
+                // 3. Passa il nuovo elemento dentro le parentesi di appendChild
+                lista.appendChild(newElement);
+            }
+            
+                risultato:=>
+                    Mouse Wireless
+                    Tastiera Meccanica
+                    Monitor 24 Pollici
+                    Cuffie Gaming
+                    Tappetino XL
+            */
+
+            dati.forEach(p => {
+                let elemento = document.createElement('li');
+                elemento.textContent = `${p.nome} - ${p.prezzo} €`;
+                lista.appendChild(elemento);
+            });
+            /*
+                risultato:=>
+                    Mouse Wireless - 25.5 €
+                    Tastiera Meccanica - 89.9 €
+                    Monitor 24 Pollici - 149 €
+                    Cuffie Gaming - 45 €
+                    Tappetino XL - 15 €
+            */
+
+        }
+
+        async function inviaDati() {
+
+            const nome = document.getElementById('nuovoNome').value;
+            const prezzo = document.getElementById('nuovoPrezzo').value;
+
+            const res = await fetch(
+                'https://special-space-halibut-wvrrq9rgqw573q55-8000.app.github.dev/prodotti',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nome: nome,
+                        prezzo: Number(prezzo)
+                    })
+                }
+            );
+
+            console.log(await res.json());
+
+            // aggiorna la lista
+            caricaDati();
+        }
+
+
+
+
+
+        //per il login dell'utente
+        async function login() {
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const res = await fetch('https://special-space-halibut-wvrrq9rgqw573q55-8000.app.github.dev/login_utente', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+
+            const data = await res.json();
+
+            const output = document.getElementById('risultatoLogin');
+
+            if (res.ok) {
+                output.innerText = "Login OK! Token: " + data.token;
+
+                // SALVO IL TOKEN nel browser
+                localStorage.setItem("token", data.token);
+
+            } else {
+                output.innerText = data.detail;
+            }
+        }
+
+        //per la registrazione dell'utente
+        async function register() {
+
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+
+            const res = await fetch('https://special-space-halibut-wvrrq9rgqw573q55-8000.app.github.dev/register_utente', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+
+            const data = await res.json();
+
+            const output = document.getElementById('risultatoRegister');
+
+            if (res.ok) {
+                output.innerText = "Registrazione OK!";
+            } else {
+                output.innerText = data.detail;
+            }
+        }
+    </script>
+</body>
+</html>
